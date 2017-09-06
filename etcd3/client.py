@@ -829,7 +829,7 @@ class Etcd3Client(object):
             file_obj.write(response.blob)
 
 
-def client(host='localhost', port=2379, tls=True
+def client(host='localhost', port=2379, tls=True,
            ca_cert=None, cert_key=None, cert_cert=None, timeout=None):
     """Return an instance of an Etcd3Client."""
     return Etcd3Client(host=host,
