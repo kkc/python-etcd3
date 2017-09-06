@@ -87,7 +87,7 @@ class Alarm(object):
 
 
 class Etcd3Client(object):
-    def __init__(self, host='localhost', port=2379,
+    def __init__(self, host='localhost', port=2379, tls=False,
                  ca_cert=None, cert_key=None, cert_cert=None, timeout=None):
         self._url = '{host}:{port}'.format(host=host, port=port)
 
@@ -110,6 +110,10 @@ class Etcd3Client(object):
                 credentials = self._get_secure_creds(ca_cert, None, None)
                 self.uses_secure_channel = True
                 self.channel = grpc.secure_channel(self._url, credentials)
+        elif tls:
+            credentials = grpc.ssl_channel_credentials()
+            self.uses_secure_channel = True
+            self.channel = grpc.secure_channel(self._url, credentials)
         else:
             self.uses_secure_channel = False
             self.channel = grpc.insecure_channel(self._url)
@@ -825,11 +829,12 @@ class Etcd3Client(object):
             file_obj.write(response.blob)
 
 
-def client(host='localhost', port=2379,
+def client(host='localhost', port=2379, tls=True,
            ca_cert=None, cert_key=None, cert_cert=None, timeout=None):
     """Return an instance of an Etcd3Client."""
     return Etcd3Client(host=host,
                        port=port,
+                       tls=tls,
                        ca_cert=ca_cert,
                        cert_key=cert_key,
                        cert_cert=cert_cert,
